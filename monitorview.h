@@ -29,7 +29,7 @@ public:
     }
 
     void draw(QPainter& painter, double scale){
-        QRect modelRECT = mModel->getRect(scale);
+        const QRect modelRECT = mModel->getRect(scale);
         QColor color = mModel->isSelected() ? QColor::fromRgb(0, 255, 0) : QColor::fromRgb(255, 255, 255);
         painter.setPen(color);
         painter.drawRect(modelRECT);

@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "monitorview.h"
+#include "screen.h"
 
 class CroppingWidget : public QWidget
 {
@@ -37,10 +38,8 @@ public:
     bool loadImage(const QFile &path);
 
     inline void setImageScale(double scale){ mImageScale = scale; }
-    inline void setMonitorScale(double scale){ mMonitorScale = scale; }
 
     void setStatusbar(QStatusBar *s);
-
 signals:
 
 public slots:
@@ -56,15 +55,15 @@ protected:
 private:
     bool mousePressed = false;
     QPoint mMousePressBeginPosition;
-    QMap<QString, MonitorView*> mMonitors;
     void scale(const QSize& size);
     void moveMonitors(int dX, int dY);
-    int getMonitorOverallWidth();
-    double mMonitorScale = 1;
+    //double mMonitorScale = 1;
     double mImageScale = 1;
     QImage mImage;
     QLabel* mStatusBarView;
     QImage mOriginalImage;
+
+    Screen mScreen;
 };
 
 #endif // CROPPINGWIDGET_H

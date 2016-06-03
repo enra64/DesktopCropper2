@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QPoint>
 
+#include <iostream>
+
 #include "monitorview.h"
 
 typedef QMap<QString, MonitorView*> MonitorMap;
@@ -28,6 +30,10 @@ public:
     void addMonitor(const QString& name, const Vec2i &size, const Vec2i &pos);
 
     void moveMonitors(int dX, int dY, const QImage &img);
+
+    void draw(QPainter &painter);
+
+    inline double& getMonitorScale() { return mMonitorScale; }
 private:
     QRect mCurrentScreenRect;
     void update();
@@ -38,6 +44,7 @@ private:
     MonitorMap::iterator getBottomMostMonitor();
 
     MonitorMap mMonitors;
+    double mMonitorScale = 1;
 };
 
 #endif // SCREEN_H

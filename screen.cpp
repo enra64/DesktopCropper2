@@ -69,8 +69,15 @@ void Screen::moveMonitors(int dX, int dY, const QImage& img)
     if(!img.rect().contains(newRect)){
         for(MonitorView* m : mMonitors)
             m->move(-dX, -dY);
+        std::cout << "not contained" << std::endl;
     }
     update();
+}
+
+void Screen::draw(QPainter& painter)
+{
+    for(MonitorView* m : mMonitors)
+        m->draw(painter, mMonitorScale);
 }
 
 void Screen::update()
@@ -81,10 +88,10 @@ void Screen::update()
     MonitorView* bottomMost = getBottomMostMonitor().value();
 
     mCurrentScreenRect = QRect(
-                leftMost->getModel().getPosition().x(),
-                topMost->getModel().getPosition().y(),
-                rightMost->getModel().getRect().right() - leftMost->getModel().getPosition().x(),
-                bottomMost->getModel().getRect().bottom() - topMost->getModel().getPosition().y());
+                leftMost->getModel().getRect(mMonitorScale).left(),
+                topMost->getModel().getRect(mMonitorScale).top(),
+                rightMost->getModel().getRect(mMonitorScale).right() - leftMost->getModel().getRect(mMonitorScale).left(),
+                bottomMost->getModel().getRect(mMonitorScale).bottom() - topMost->getModel().getRect(mMonitorScale).top());
 }
 
 QMap<QString, MonitorView*>::iterator Screen::getRightMostMonitor()

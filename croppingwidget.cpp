@@ -5,47 +5,36 @@ CroppingWidget::CroppingWidget(QWidget *parent) : QWidget(parent) {
     mStatusBarView->setAlignment(Qt::AlignRight);
 }
 
-CroppingWidget::~CroppingWidget()
-{
+CroppingWidget::~CroppingWidget() {
     delete mStatusBarView;
-    for(MonitorView* m : mMonitors)
-        delete m;
 }
 
 void CroppingWidget::addMonitor(const QString &name, const Vec2i& size, const Vec2i& pos) {
     // note to self: if you construct the element without "new" here, the monitorview dies before it is even used
-    mMonitors.insert(name, new MonitorView(size, pos));
+    mScreen.addMonitor(name, size, pos);
     update();
 }
 
-const MonitorView& CroppingWidget::getMonitor(const QString &name)
-{
-    return *mMonitors.find(name).value();
+const MonitorView& CroppingWidget::getMonitor(const QString &name) {
+    return mScreen.getMonitor(name);
 }
 
-QString CroppingWidget::getMonitorName(Vec2i) { return QString(); }
+QString CroppingWidget::getMonitorName(Vec2i) {
+    return QString();
+}
 
 void CroppingWidget::saveCrops(const QFile &path) {
-    for(auto i = mMonitors.begin(); i != mMonitors.end(); i++)
-        i.value()->saveCrop(path.fileName() + "_" + i.key(), mOriginalImage, mImageScale, mMonitorScale);
-}
-
-void CroppingWidget::selectMonitor(const QString &name, bool select = true) {
-    mMonitors.find(name).value()->setSelected(select);
-    update();
+    mScreen.saveCrops(path, mOriginalImage, mImageScale, mScreen.getMonitorScale());
 }
 
 void CroppingWidget::paintEvent(QPaintEvent * /* event */) {
     std::cout << "ok" << std::endl;
     QPainter painter(this);
     painter.drawImage(0, 0, mImage);
-
-    for(MonitorView* m : mMonitors)
-        m->draw(painter, mMonitorScale);
+    mScreen.draw(painter);
 }
 
-void CroppingWidget::resizeEvent(QResizeEvent *event)
-{
+void CroppingWidget::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
     if(mOriginalImage.isNull())
         return;
@@ -53,51 +42,36 @@ void CroppingWidget::resizeEvent(QResizeEvent *event)
     scale(event->size());
 }
 
-void CroppingWidget::wheelEvent(QWheelEvent *e)
-{
-    mMonitorScale *= e->angleDelta().y() > 0 ? 0.98 : 1.02;
+void CroppingWidget::wheelEvent(QWheelEvent *e) {
+    mScreen.getMonitorScale() *= e->angleDelta().y() > 0 ? 0.98 : 1.02;
     update();
 }
 
-void CroppingWidget::mousePressEvent(QMouseEvent *e)
-{
+void CroppingWidget::mousePressEvent(QMouseEvent *e) {
     mousePressed = true;
     mMousePressBeginPosition = e->pos();
 }
 
-void CroppingWidget::mouseMoveEvent(QMouseEvent *e)
-{
+void CroppingWidget::mouseMoveEvent(QMouseEvent *e) {
     QPoint positionDelta = e->pos() - mMousePressBeginPosition;
     mMousePressBeginPosition = e->pos();
     moveMonitors(positionDelta.x(), positionDelta.y());
 }
 
-void CroppingWidget::mouseReleaseEvent(QMouseEvent *)
-{
+void CroppingWidget::mouseReleaseEvent(QMouseEvent *) {
     mousePressed = false;
 }
 
-void CroppingWidget::scale(const QSize &size)
-{
+void CroppingWidget::scale(const QSize &size) {
     mImage = mOriginalImage.scaled(size, Qt::KeepAspectRatio);
     mImageScale = (double) mImage.width() / (double)mOriginalImage.width();
-    mMonitorScale = (double) size.width() / (double) getMonitorOverallWidth();
-    mStatusBarView->setText(QString("Scales: Image: %1, Monitors: %2").arg(mImageScale).arg(mMonitorScale));
+    mScreen.getMonitorScale() = (double) size.width() / (double) mScreen.getRect().width();
+    mStatusBarView->setText(QString("Scales: Image: %1, Monitors: %2").arg(mImageScale).arg(mScreen.getMonitorScale()));
 }
 
-void CroppingWidget::moveMonitors(int dX, int dY)
-{
-    for(MonitorView* m : mMonitors)
-        m->move(dX, dY);
+void CroppingWidget::moveMonitors(int dX, int dY) {
+    mScreen.moveMonitors(dX, dY, mImage);
     update();
-}
-
-int CroppingWidget::getMonitorOverallWidth()
-{
-    int w = 0;
-    for(MonitorView* m : mMonitors)
-        w += m->getModel().getSize().x();
-    return w;
 }
 
 bool CroppingWidget::loadImage(const QFile &path) {
@@ -108,7 +82,6 @@ bool CroppingWidget::loadImage(const QFile &path) {
     return success;
 }
 
-void CroppingWidget::setStatusbar(QStatusBar *s)
-{
+void CroppingWidget::setStatusbar(QStatusBar *s) {
     s->addWidget(mStatusBarView);
 }
