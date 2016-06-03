@@ -61,8 +61,12 @@ QString MainWindow::showFileOpenDialog()
     dialog.setWindowTitle("Open File");
     dialog.setNameFilter("Images(*.jpg *.png)");
     dialog.setOption(QFileDialog::DontUseNativeDialog, true);
-    dialog.exec();
-    return dialog.selectedFiles().first();
+    QDialog::DialogCode result = (QDialog::DialogCode)dialog.exec();
+
+    if(result == QDialog::DialogCode::Accepted)
+        return dialog.selectedFiles().first();
+    else
+        return QString();
 }
 
 void MainWindow::showFileSaveDialog()
