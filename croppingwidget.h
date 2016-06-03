@@ -55,7 +55,7 @@ protected:
 private:
     bool mousePressed = false;
     QPoint mMousePressBeginPosition;
-    void scale(const QSize& size);
+    void scale();
     void moveMonitors(int dX, int dY);
     //double mMonitorScale = 1;
     double mImageScale = 1;

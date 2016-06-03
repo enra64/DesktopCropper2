@@ -28,7 +28,6 @@ void CroppingWidget::saveCrops(const QFile &path) {
 }
 
 void CroppingWidget::paintEvent(QPaintEvent * /* event */) {
-    std::cout << "ok" << std::endl;
     QPainter painter(this);
     painter.drawImage(0, 0, mImage);
     mScreen.draw(painter);
@@ -39,7 +38,7 @@ void CroppingWidget::resizeEvent(QResizeEvent *event) {
     if(mOriginalImage.isNull())
         return;
 
-    scale(event->size());
+    scale();
 }
 
 void CroppingWidget::wheelEvent(QWheelEvent *e) {
@@ -63,10 +62,10 @@ void CroppingWidget::mouseReleaseEvent(QMouseEvent *) {
     mousePressed = false;
 }
 
-void CroppingWidget::scale(const QSize &size) {
-    mImage = mOriginalImage.scaled(size, Qt::KeepAspectRatio);
+void CroppingWidget::scale() {
+    mImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
     mImageScale = (double) mImage.width() / (double)mOriginalImage.width();
-    mScreen.setScale((double) size.width() / (double) mScreen.getRect().width());
+    mScreen.scaleBy((double) mImage.width() / (double) mScreen.getRect().width());
     updateStatusBar();
 }
 
@@ -91,7 +90,7 @@ void CroppingWidget::moveMonitors(int dX, int dY) {
 bool CroppingWidget::loadImage(const QFile &path) {
     bool success = mImage.load(path.fileName());
     mOriginalImage.load(path.fileName());
-    scale(size());
+    scale();
     update();
     return success;
 }

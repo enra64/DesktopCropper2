@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->cropper->addMonitor("l", Vec2i(1024, 1280), Vec2i(0, 320));
     ui->cropper->addMonitor("m", Vec2i(1920, 1080), Vec2i(1024, 420));
     ui->cropper->addMonitor("r", Vec2i(1080, 1920), Vec2i(2944, 0));
+    setWindowTitle(QString("Desktop Cropper 2"));
 }
 
 MainWindow::~MainWindow()
@@ -29,6 +30,7 @@ void MainWindow::on_actionOpen_triggered()
     else
         ui->statusBar->showMessage("load failed", 1500);
     mFilePath = "";
+    setWindowTitle(QString("Desktop Cropper 2: %1").arg(QFileInfo(image.fileName()).fileName()));
 }
 
 void MainWindow::on_actionSave_2_triggered()
