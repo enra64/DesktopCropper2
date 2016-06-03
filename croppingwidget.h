@@ -64,6 +64,7 @@ private:
     QImage mOriginalImage;
 
     Screen mScreen;
+    void updateStatusBar();
 };
 
 #endif // CROPPINGWIDGET_H

@@ -39,12 +39,13 @@ public:
         // scale must be 1, or the size would not be for example 1920x1080
         QRect cropRect = mModel->getRect(1);
         QSize origImageSize = originalImage.size();
+        QString extendedPath = QString(p).append(".jpg");
 
         QSize targetSize = origImageSize * imageScale * (1 / monitorScale);
 
         QImage scaled = originalImage.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         QImage cropped = scaled.copy(cropRect);
-        return cropped.save(p, "jpg", 100);
+        return cropped.save(extendedPath, "jpg", 100);
     }
 
     inline bool isSelected() const {

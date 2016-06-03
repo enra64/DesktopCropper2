@@ -28,6 +28,7 @@ void MainWindow::on_actionOpen_triggered()
         ui->statusBar->showMessage("load ok", 1500);
     else
         ui->statusBar->showMessage("load failed", 1500);
+    mFilePath = "";
 }
 
 void MainWindow::on_actionSave_2_triggered()
@@ -53,9 +54,10 @@ QString MainWindow::showFileOpenDialog()
 {
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setDirectory("/home/arne/Downloads");
     dialog.setFilter(QDir::Files);
     dialog.setWindowTitle("Open File");
-    dialog.setNameFilter("All Files(*.*)");
+    dialog.setNameFilter("Images(*.jpg *.png)");
     dialog.setOption(QFileDialog::DontUseNativeDialog, true);
     dialog.exec();
     return dialog.selectedFiles().first();
@@ -65,7 +67,7 @@ void MainWindow::showFileSaveDialog()
 {
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setDirectory(mFilePath);
+    dialog.setDirectory("/home/arne/Documents/Pictures/backgrounds");
     dialog.setFilter(QDir::Files);
     dialog.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
     dialog.setWindowTitle("Save File");

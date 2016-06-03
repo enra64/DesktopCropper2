@@ -43,7 +43,8 @@ void CroppingWidget::resizeEvent(QResizeEvent *event) {
 }
 
 void CroppingWidget::wheelEvent(QWheelEvent *e) {
-    mScreen.getMonitorScale() *= e->angleDelta().y() > 0 ? 0.98 : 1.02;
+    mScreen.scaleBy(e->angleDelta().y() > 0 ? 0.98 : 1.02);
+    updateStatusBar();
     update();
 }
 
@@ -65,8 +66,21 @@ void CroppingWidget::mouseReleaseEvent(QMouseEvent *) {
 void CroppingWidget::scale(const QSize &size) {
     mImage = mOriginalImage.scaled(size, Qt::KeepAspectRatio);
     mImageScale = (double) mImage.width() / (double)mOriginalImage.width();
-    mScreen.getMonitorScale() = (double) size.width() / (double) mScreen.getRect().width();
-    mStatusBarView->setText(QString("Scales: Image: %1, Monitors: %2").arg(mImageScale).arg(mScreen.getMonitorScale()));
+    mScreen.setScale((double) size.width() / (double) mScreen.getRect().width());
+    updateStatusBar();
+}
+
+void CroppingWidget::updateStatusBar(){
+    const double oldMonitorScale = mScreen.getMonitorScale();
+    mScreen.setScale(1);
+    QString text = QString("Scales: Image: %1, Monitors: %2; Sizes: Image: %3, Screen: %4 -> %5")
+    .arg(mImageScale)
+    .arg(oldMonitorScale)
+    .arg(QString("%1x%2").arg(mOriginalImage.width()).arg(mOriginalImage.height()))
+    .arg(QString("%1x%2").arg(mScreen.getRect().width()).arg(mScreen.getRect().height()))
+    .arg(mOriginalImage.rect().contains(mScreen.getRect()) ? "ok" : "too small");
+    mStatusBarView->setText(text);
+    mScreen.setScale(oldMonitorScale);
 }
 
 void CroppingWidget::moveMonitors(int dX, int dY) {

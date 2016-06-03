@@ -33,7 +33,19 @@ public:
 
     void draw(QPainter &painter);
 
-    inline double& getMonitorScale() { return mMonitorScale; }
+    void setScale(const double factor){
+        mMonitorScale = factor;
+        update();
+    }
+
+    void scaleBy(const double factor){
+        mMonitorScale *= factor;
+        update();
+    }
+
+    inline const double& getMonitorScale() const {
+        return mMonitorScale;
+    }
 private:
     QRect mCurrentScreenRect;
     void update();

@@ -66,11 +66,9 @@ void Screen::moveMonitors(int dX, int dY, const QImage& img)
     update();
     QRect newRect = getRect();
     // revert if out of bounds
-    if(!img.rect().contains(newRect)){
+    if(!img.rect().contains(newRect))
         for(MonitorView* m : mMonitors)
             m->move(-dX, -dY);
-        std::cout << "not contained" << std::endl;
-    }
     update();
 }
 
