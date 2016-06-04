@@ -13,8 +13,7 @@
 
 typedef QMap<QString, MonitorView*> MonitorMap;
 
-class Screen
-{
+class Screen {
 public:
     Screen();
     Screen(const Screen& o);
@@ -25,20 +24,24 @@ public:
     void saveCrops(const QFile &path, const QImage &img, double imageScale, double monitorScale);
 
     const MonitorView& getMonitor(const QString& name);
-    QString getMonitorName(Vec2i clickPosition, double mMonitorScale);
+    QString getMonitorName(QPoint clickPosition);
     bool removeMonitor(const QString& name);
-    void addMonitor(const QString& name, const Vec2i &size, const Vec2i &pos);
+    void addMonitor(const QString& name, const QSize &size, const QPoint &pos);
 
     void moveMonitors(int dX, int dY, const QImage &img);
 
+    void select(const QString& which, bool select = true);
+    void selectAll(bool select = true);
+    bool isSelected(const QString& which) { return getMonitor(which).isSelected(); }
+
     void draw(QPainter &painter);
 
-    void setScale(const double factor){
+    void setScale(const double factor) {
         mMonitorScale = factor;
         update();
     }
 
-    void scaleBy(const double factor){
+    void scaleBy(const double factor) {
         mMonitorScale *= factor;
         update();
     }
@@ -46,6 +49,7 @@ public:
     inline const double& getMonitorScale() const {
         return mMonitorScale;
     }
+
 private:
     QRect mCurrentScreenRect;
     void update();

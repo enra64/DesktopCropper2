@@ -25,13 +25,13 @@ public:
 
     bool removeMonitor(const QString& name);
 
-    void addMonitor(const QString& name, const Vec2i &size, const Vec2i &pos);
+    void addMonitor(const QString& name, const QSize &size, const QPoint &pos);
 
     const MonitorView& getMonitor(const QString& name);
 
-    QString getMonitorName(Vec2i clickPosition);
+    QString getMonitorName(QPoint clickPosition);
 
-    void selectMonitor(const QString& name, bool select);
+    void selectAllMonitors(bool select);
 
     void saveCrops(const QFile &path);
 
@@ -50,11 +50,14 @@ protected:
     void wheelEvent(QWheelEvent* event);
     void mousePressEvent(QMouseEvent*e);
     void mouseMoveEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*e);
 
 private:
-    bool mousePressed = false;
+    bool mMousePressed = false;
+    bool mMouseMoved = false;
     QPoint mMousePressBeginPosition;
+
+    bool mImageLoaded = false;
     void scale();
     void moveMonitors(int dX, int dY);
     //double mMonitorScale = 1;

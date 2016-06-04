@@ -1,14 +1,12 @@
 #ifndef MONITORMODEL_H
 #define MONITORMODEL_H
 
-#include "vector.h"
-
 #include <QRect>
 
 class MonitorModel
 {
 public:
-    MonitorModel(const Vec2i& size, const Vec2i& position) :
+    MonitorModel(const QSize& size, const QPoint& position) :
         mSize(size),
         mPosition(position) {
     }
@@ -26,28 +24,28 @@ public:
         return *this;
     }
 
-    inline const Vec2i& getPosition() const { return mPosition; }
+    inline int getLeft() const { return mPosition.x(); }
+    inline int getRight() const { return mPosition.x() + getWidth(); }
+    inline int getTop() const { return mPosition.y(); }
+    inline int getBottom() const { return mPosition.x() + getHeight(); }
 
-    inline const Vec2i& getSize() const { return mSize; }
+    inline int getWidth() const { return mSize.width(); }
+    inline int getHeight() const { return mSize.height(); }
 
-    inline void setSize(const Vec2i& size){
+    inline void setSize(const QSize& size){
         mSize = size;
     }
 
     inline void move(int dX, int dY){
-        mPosition.setX(mPosition.x() + dX);
-        mPosition.setY(mPosition.y() + dY);
+        mPosition += QPoint(dX, dY);
     }
 
-    inline void setPosition(const Vec2i& pos){
+    inline void setPosition(const QPoint& pos){
         mPosition = pos;
     }
 
     inline QRect getRect(double scale = 1) const {
-        return QRect(mPosition.x() * scale,
-                     mPosition.y() * scale,
-                     mSize.x() * scale,
-                     mSize.y() * scale);
+        return QRect(mPosition * scale, mSize * scale);
     }
 
     inline bool isSelected() const {
@@ -59,9 +57,9 @@ public:
     }
 
 private:
-    Vec2i mSize;
-    Vec2i mPosition;
-    bool mIsSelected = false;
+    QSize mSize;
+    QPoint mPosition;
+    bool mIsSelected = true;
 };
 
 #endif // MONITORMODEL_H

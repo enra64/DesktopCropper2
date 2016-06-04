@@ -9,7 +9,7 @@ CroppingWidget::~CroppingWidget() {
     delete mStatusBarView;
 }
 
-void CroppingWidget::addMonitor(const QString &name, const Vec2i& size, const Vec2i& pos) {
+void CroppingWidget::addMonitor(const QString &name, const QSize& size, const QPoint& pos) {
     // note to self: if you construct the element without "new" here, the monitorview dies before it is even used
     mScreen.addMonitor(name, size, pos);
     update();
@@ -19,8 +19,13 @@ const MonitorView& CroppingWidget::getMonitor(const QString &name) {
     return mScreen.getMonitor(name);
 }
 
-QString CroppingWidget::getMonitorName(Vec2i) {
-    return QString();
+QString CroppingWidget::getMonitorName(QPoint clickPosition) {
+    return mScreen.getMonitorName(clickPosition);
+}
+
+void CroppingWidget::selectAllMonitors(bool select)
+{
+    mScreen.selectAll(select);
 }
 
 void CroppingWidget::saveCrops(const QFile &path) {
@@ -30,7 +35,9 @@ void CroppingWidget::saveCrops(const QFile &path) {
 void CroppingWidget::paintEvent(QPaintEvent * /* event */) {
     QPainter painter(this);
     painter.drawImage(0, 0, mImage);
-    mScreen.draw(painter);
+
+    if(mImageLoaded)
+        mScreen.draw(painter);
 }
 
 void CroppingWidget::resizeEvent(QResizeEvent *event) {
@@ -48,18 +55,36 @@ void CroppingWidget::wheelEvent(QWheelEvent *e) {
 }
 
 void CroppingWidget::mousePressEvent(QMouseEvent *e) {
-    mousePressed = true;
+    mMousePressed = true;
     mMousePressBeginPosition = e->pos();
+    mMouseMoved = false;
 }
 
 void CroppingWidget::mouseMoveEvent(QMouseEvent *e) {
     QPoint positionDelta = e->pos() - mMousePressBeginPosition;
     mMousePressBeginPosition = e->pos();
+    mMouseMoved = true;
     moveMonitors(positionDelta.x(), positionDelta.y());
 }
 
-void CroppingWidget::mouseReleaseEvent(QMouseEvent *) {
-    mousePressed = false;
+void CroppingWidget::mouseReleaseEvent(QMouseEvent *e) {
+    mMousePressed = false;
+    // clicked
+    if(!mMouseMoved && mImageLoaded){
+        QString clickedMonitorName = getMonitorName(e->pos());
+        if(e->modifiers() & Qt::ControlModifier){
+            // get selected monitor
+            // toggle selection state
+            mScreen.select(clickedMonitorName, !mScreen.isSelected(clickedMonitorName));
+        }
+        // control not pressed
+        else{
+            // deselect all
+            mScreen.selectAll(false);
+            mScreen.select(clickedMonitorName);
+        }
+        update();
+    }
 }
 
 void CroppingWidget::scale() {
@@ -89,6 +114,8 @@ void CroppingWidget::moveMonitors(int dX, int dY) {
 
 bool CroppingWidget::loadImage(const QFile &path) {
     bool success = mImage.load(path.fileName());
+    if(success)
+        mImageLoaded = true;
     mOriginalImage.load(path.fileName());
     scale();
     update();

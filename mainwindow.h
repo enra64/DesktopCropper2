@@ -24,11 +24,16 @@ private slots:
 
     void on_actionSave_As_2_triggered();
 
+    void on_actionSelect_None_triggered();
+
+    void on_actionSelect_All_triggered();
+
 private:
     QString showFileOpenDialog();
     void showFileSaveDialog();
     Ui::MainWindow *ui;
     QString mFilePath;
+    bool mSelectAllToggle = true;
 };
 
 #endif // MAINWINDOW_H

@@ -19,7 +19,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     monitormodel.h \
-    vector.h \
     monitorview.h \
     croppingwidget.h \
     screen.h

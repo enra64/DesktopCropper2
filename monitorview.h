@@ -9,10 +9,10 @@
 class MonitorView
 {
 public:
-    MonitorView(int x, int y, int w, int h) : MonitorView(Vec2i(w, h), Vec2i(x, y)){
+    MonitorView(int x, int y, int w, int h) : MonitorView(QSize(w, h), QPoint(x, y)){
     }
 
-    MonitorView(const Vec2i& size, const Vec2i& position){
+    MonitorView(const QSize& size, const QPoint& position){
         mModel = new MonitorModel(size, position);
     }
 

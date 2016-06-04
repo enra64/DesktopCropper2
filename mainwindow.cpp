@@ -7,9 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->cropper->setStatusbar(ui->statusBar);
-    ui->cropper->addMonitor("l", Vec2i(1024, 1280), Vec2i(0, 320));
-    ui->cropper->addMonitor("m", Vec2i(1920, 1080), Vec2i(1024, 420));
-    ui->cropper->addMonitor("r", Vec2i(1080, 1920), Vec2i(2944, 0));
+    ui->cropper->addMonitor("l", QSize(1024, 1280), QPoint(0, 320));
+    ui->cropper->addMonitor("m", QSize(1920, 1080), QPoint(1024, 420));
+    ui->cropper->addMonitor("r", QSize(1080, 1920), QPoint(2944, 0));
     setWindowTitle(QString("Desktop Cropper 2"));
 }
 
@@ -80,4 +80,15 @@ void MainWindow::showFileSaveDialog()
     dialog.setOption(QFileDialog::DontUseNativeDialog, true);
     dialog.exec();
     mFilePath = dialog.selectedFiles().first();
+}
+
+void MainWindow::on_actionSelect_None_triggered()
+{
+    mSelectAllToggle = !mSelectAllToggle;
+    ui->cropper->selectAllMonitors(mSelectAllToggle);
+}
+
+void MainWindow::on_actionSelect_All_triggered()
+{
+    on_actionSelect_None_triggered();
 }
