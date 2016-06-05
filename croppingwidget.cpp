@@ -15,7 +15,7 @@ void CroppingWidget::addMonitor(const QString &name, const QSize& size, const QP
     update();
 }
 
-const MonitorView& CroppingWidget::getMonitor(const QString &name) {
+const Monitor& CroppingWidget::getMonitor(const QString &name) {
     return mScreen.getMonitor(name);
 }
 
@@ -29,7 +29,7 @@ void CroppingWidget::selectAllMonitors(bool select)
 }
 
 void CroppingWidget::saveCrops(const QFile &path) {
-    mScreen.saveCrops(path, mOriginalImage, mImageScale, mScreen.getMonitorScale());
+    mScreen.saveCrops(path, mOriginalImage, mImageScale);
 }
 
 void CroppingWidget::paintEvent(QPaintEvent * /* event */) {
@@ -49,7 +49,7 @@ void CroppingWidget::resizeEvent(QResizeEvent *event) {
 }
 
 void CroppingWidget::wheelEvent(QWheelEvent *e) {
-    mScreen.scaleBy(e->angleDelta().y() > 0 ? 0.98 : 1.02);
+    mScreen.scaleBy(e->angleDelta().y() > 0 ? 0.98 : 1.02, mImage);
     updateStatusBar();
     update();
 }
@@ -79,32 +79,32 @@ void CroppingWidget::mouseReleaseEvent(QMouseEvent *e) {
         }
         // control not pressed
         else{
+            if(clickedMonitorName.isEmpty())
+                return;
             // deselect all
             mScreen.selectAll(false);
             mScreen.select(clickedMonitorName);
         }
         update();
     }
+    // TODO: improve algorithm determining whether the image can be cropped out at ok resolution -> screen 1:1 monitors fit, plus scale does not reduce quality
 }
 
 void CroppingWidget::scale() {
     mImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
     mImageScale = (double) mImage.width() / (double)mOriginalImage.width();
-    mScreen.scaleBy((double) mImage.width() / (double) mScreen.getRect().width());
+    mScreen.scaleBy((double) mImage.width() / (double) mScreen.getRect().width(), mImage);
     updateStatusBar();
 }
 
 void CroppingWidget::updateStatusBar(){
-    const double oldMonitorScale = mScreen.getMonitorScale();
-    mScreen.setScale(1);
     QString text = QString("Scales: Image: %1, Monitors: %2; Sizes: Image: %3, Screen: %4 -> %5")
     .arg(mImageScale)
-    .arg(oldMonitorScale)
+    .arg("unknown")
     .arg(QString("%1x%2").arg(mOriginalImage.width()).arg(mOriginalImage.height()))
     .arg(QString("%1x%2").arg(mScreen.getRect().width()).arg(mScreen.getRect().height()))
     .arg(mOriginalImage.rect().contains(mScreen.getRect()) ? "ok" : "too small");
     mStatusBarView->setText(text);
-    mScreen.setScale(oldMonitorScale);
 }
 
 void CroppingWidget::moveMonitors(int dX, int dY) {

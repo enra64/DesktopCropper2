@@ -18,9 +18,8 @@ SOURCES += main.cpp\
     screen.cpp
 
 HEADERS  += mainwindow.h \
-    monitormodel.h \
-    monitorview.h \
     croppingwidget.h \
-    screen.h
+    screen.h \
+    monitor.h
 
 FORMS    += mainwindow.ui

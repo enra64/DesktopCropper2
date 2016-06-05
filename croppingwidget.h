@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include "monitorview.h"
+#include "monitor.h"
 #include "screen.h"
 
 class CroppingWidget : public QWidget
@@ -27,7 +27,7 @@ public:
 
     void addMonitor(const QString& name, const QSize &size, const QPoint &pos);
 
-    const MonitorView& getMonitor(const QString& name);
+    const Monitor& getMonitor(const QString& name);
 
     QString getMonitorName(QPoint clickPosition);
 
