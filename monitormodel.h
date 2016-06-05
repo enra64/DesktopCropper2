@@ -3,6 +3,8 @@
 
 #include <QRect>
 
+enum struct Border { TOP_BORDER, RIGHT_BORDER, BOTTOM_BORDER, LEFT_BORDER };
+
 class MonitorModel
 {
 public:
@@ -24,13 +26,19 @@ public:
         return *this;
     }
 
-    inline int getLeft() const { return mPosition.x(); }
-    inline int getRight() const { return mPosition.x() + getWidth(); }
-    inline int getTop() const { return mPosition.y(); }
-    inline int getBottom() const { return mPosition.x() + getHeight(); }
-
-    inline int getWidth() const { return mSize.width(); }
-    inline int getHeight() const { return mSize.height(); }
+    inline int getBorderPosition(const Border& b, double scale = 1) const {
+        switch(b){
+            case Border::TOP_BORDER:
+                return (mPosition.y()) * scale;
+            case Border::RIGHT_BORDER:
+                return (mPosition.x() + mSize.width()) * scale;
+            case Border::BOTTOM_BORDER:
+                return (mPosition.y() + mSize.height()) * scale;
+            case Border::LEFT_BORDER:
+                return mPosition.x() * scale;
+        }
+        throw "unknown border";
+    }
 
     inline void setSize(const QSize& size){
         mSize = size;

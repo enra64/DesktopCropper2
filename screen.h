@@ -54,10 +54,7 @@ private:
     QRect mCurrentScreenRect;
     void update();
 
-    MonitorMap::iterator getRightMostMonitor();
-    MonitorMap::iterator getLeftMostMonitor();
-    MonitorMap::iterator getTopMostMonitor();
-    MonitorMap::iterator getBottomMostMonitor();
+    int getBorder(Border b);
 
     MonitorMap mMonitors;
     double mMonitorScale = 1;

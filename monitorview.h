@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QColor>
 
+
 class MonitorView
 {
 public:
@@ -26,6 +27,10 @@ public:
 
     inline void move(int dX, int dY) {
         mModel->move(dX, dY);
+    }
+
+    inline int getBorderPosition(const Border& b, double scale = 1){
+        return mModel->getBorderPosition(b, scale);
     }
 
     void draw(QPainter& painter, double scale){

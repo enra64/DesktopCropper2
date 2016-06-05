@@ -58,7 +58,8 @@ void Screen::moveMonitors(int dX, int dY, const QImage& img) {
     // revert if out of bounds
     if(!img.rect().contains(newRect))
         for(MonitorView* m : mMonitors)
-            m->move(-dX, -dY);
+            if(m->isSelected())
+                m->move(-dX, -dY);
     update();
 }
 
@@ -77,70 +78,24 @@ void Screen::draw(QPainter& painter) {
 }
 
 void Screen::update() {
-    MonitorView* leftMost = getLeftMostMonitor().value();
-    MonitorView* rightMost = getRightMostMonitor().value();
-    MonitorView* topMost = getTopMostMonitor().value();
-    MonitorView* bottomMost = getBottomMostMonitor().value();
+    int left = getBorder(Border::LEFT_BORDER);
+    int top = getBorder(Border::TOP_BORDER);
 
-    mCurrentScreenRect = QRect(
-                             leftMost->getModel().getRect(mMonitorScale).left(),
-                             topMost->getModel().getRect(mMonitorScale).top(),
-                             1 + rightMost->getModel().getRect(mMonitorScale).right() - leftMost->getModel().getRect(mMonitorScale).left(),
-                             1 + bottomMost->getModel().getRect(mMonitorScale).bottom() - topMost->getModel().getRect(mMonitorScale).top());
+    int width = getBorder(Border::RIGHT_BORDER) - left;
+    int height = getBorder(Border::BOTTOM_BORDER) - top;
+
+    mCurrentScreenRect = QRect(left, top, 1 + width, 1 + height);
 }
 
-QMap<QString, MonitorView*>::iterator Screen::getRightMostMonitor() {
-    int val = 0;
-    QMap<QString, MonitorView*>::iterator pos;
-    auto it = mMonitors.begin();
-    for(; it != mMonitors.end(); it++) {
-        int cVal = it.value()->getModel().getRight();
-        if(cVal > val) {
-            val = cVal;
-            pos = it;
-        }
+int Screen::getBorder(Border b){
+    bool botOrRightBorder = b == Border::BOTTOM_BORDER || b == Border::RIGHT_BORDER;
+    int val = botOrRightBorder ? 0 : INT_MAX;
+    for(auto it = mMonitors.begin(); it != mMonitors.end(); it++) {
+        int cVal = it.value()->getBorderPosition(b, mMonitorScale);
+        if(botOrRightBorder)
+            val = cVal > val ? cVal : val;
+        else
+            val = cVal < val ? cVal : val;
     }
-    return pos;
-}
-
-QMap<QString, MonitorView*>::iterator Screen::getLeftMostMonitor() {
-    int val = INT_MAX;
-    QMap<QString, MonitorView*>::iterator pos;
-    auto it = mMonitors.begin();
-    for(; it != mMonitors.end(); it++) {
-        int cVal = it.value()->getModel().getLeft();
-        if(cVal < val) {
-            val = cVal;
-            pos = it;
-        }
-    }
-    return pos;
-}
-
-QMap<QString, MonitorView*>::iterator Screen::getTopMostMonitor() {
-    int val = INT_MAX;
-    QMap<QString, MonitorView*>::iterator pos;
-    auto it = mMonitors.begin();
-    for(; it != mMonitors.end(); it++) {
-        int cVal = it.value()->getModel().getTop();
-        if(cVal < val) {
-            val = cVal;
-            pos = it;
-        }
-    }
-    return pos;
-}
-
-QMap<QString, MonitorView*>::iterator Screen::getBottomMostMonitor() {
-    int val = 0;
-    QMap<QString, MonitorView*>::iterator pos;
-    auto it = mMonitors.begin();
-    for(; it != mMonitors.end(); it++) {
-        int cVal = it.value()->getModel().getBottom();
-        if(cVal > val) {
-            val = cVal;
-            pos = it;
-        }
-    }
-    return pos;
+    return val;
 }
