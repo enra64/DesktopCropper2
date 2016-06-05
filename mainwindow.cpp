@@ -84,11 +84,10 @@ void MainWindow::showFileSaveDialog()
 
 void MainWindow::on_actionSelect_None_triggered()
 {
-    mSelectAllToggle = !mSelectAllToggle;
-    ui->cropper->selectAllMonitors(mSelectAllToggle);
+    ui->cropper->selectAllMonitors(false);
 }
 
 void MainWindow::on_actionSelect_All_triggered()
 {
-    on_actionSelect_None_triggered();
+    ui->cropper->selectAllMonitors(true);
 }

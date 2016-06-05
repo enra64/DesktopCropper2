@@ -5,6 +5,7 @@
 #include <QColor>
 
 enum struct Border { TOP_BORDER, RIGHT_BORDER, BOTTOM_BORDER, LEFT_BORDER };
+enum struct Scale { BOTH, Y, X };
 
 class Monitor {
 public:
@@ -70,23 +71,28 @@ public:
         return scaledRect().contains(pos);
     }
 
-    void setScale(double factor) {
-        mXScale = factor;
-        mYScale = factor;
+
+    //scale control
+    void setScale(double factor, Scale which = Scale::BOTH) {
+        if(which == Scale::BOTH || which == Scale::X)
+            mXScale = factor;
+        if(which == Scale::BOTH || which == Scale::Y)
+            mYScale = factor;
     }
 
-    void scaleBy(double factor) {
-        mXScale *= factor;
-        mYScale *= factor;
+    void scaleBy(double factor, Scale which = Scale::BOTH) {
+        if(which == Scale::BOTH || which == Scale::X)
+            mXScale *= factor;
+        if(which == Scale::BOTH || which == Scale::Y)
+            mYScale *= factor;
     }
 
-    inline bool isSelected() const {
-        return mIsSelected;
-    }
+    double getMinScale() const { return std::min(mYScale, mXScale); }
 
-    inline void setSelected(bool select) {
-        mIsSelected = select;
-    }
+
+    // selection controls
+    inline bool isSelected() const { return mIsSelected; }
+    inline void setSelected(bool select) { mIsSelected = select; }
 
 private:
     /// Returns the rectangle of this monitor, scaled by the saved scales

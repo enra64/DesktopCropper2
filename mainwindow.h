@@ -33,7 +33,6 @@ private:
     void showFileSaveDialog();
     Ui::MainWindow *ui;
     QString mFilePath;
-    bool mSelectAllToggle = true;
 };
 
 #endif // MAINWINDOW_H

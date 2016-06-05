@@ -26,6 +26,7 @@ QString CroppingWidget::getMonitorName(QPoint clickPosition) {
 void CroppingWidget::selectAllMonitors(bool select)
 {
     mScreen.selectAll(select);
+    update();
 }
 
 void CroppingWidget::saveCrops(const QFile &path) {
@@ -49,7 +50,12 @@ void CroppingWidget::resizeEvent(QResizeEvent *event) {
 }
 
 void CroppingWidget::wheelEvent(QWheelEvent *e) {
-    mScreen.scaleBy(e->angleDelta().y() > 0 ? 0.98 : 1.02, mImage);
+    Scale s = Scale::BOTH;
+    if(e->modifiers() & Qt::ControlModifier)
+        s = Scale::Y;
+    else if (e->modifiers() & Qt::AltModifier)
+        s = Scale::X;
+    mScreen.scaleBy(e->angleDelta().y() > 0 ? 0.98 : 1.02, mImage, s);
     updateStatusBar();
     update();
 }
@@ -90,20 +96,31 @@ void CroppingWidget::mouseReleaseEvent(QMouseEvent *e) {
     // TODO: improve algorithm determining whether the image can be cropped out at ok resolution -> screen 1:1 monitors fit, plus scale does not reduce quality
 }
 
+bool CroppingWidget::fullQualityCropPossible(){
+    double maxScreenScaleFactor = mScreen.getMinScaleFactor();
+    // because of this: scale = (imageScale / mXScale) in Monitor::crop()
+    if(maxScreenScaleFactor < mImageScale)
+        return false;
+    // because the user cannot make the monitors bigger than the start, the monitors must either fit or be scaled down, so
+    // above condition hits
+    return true;
+}
+
 void CroppingWidget::scale() {
     mImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
     mImageScale = (double) mImage.width() / (double)mOriginalImage.width();
-    mScreen.scaleBy((double) mImage.width() / (double) mScreen.getRect().width(), mImage);
+    // TODO: fix this shit. constantly breaks -.-
+    mScreen.setScale((double) mImage.width() / (double) mScreen.getRect().width(), mImage);
     updateStatusBar();
 }
 
 void CroppingWidget::updateStatusBar(){
     QString text = QString("Scales: Image: %1, Monitors: %2; Sizes: Image: %3, Screen: %4 -> %5")
     .arg(mImageScale)
-    .arg("unknown")
+    .arg(mScreen.getMinScaleFactor())
     .arg(QString("%1x%2").arg(mOriginalImage.width()).arg(mOriginalImage.height()))
-    .arg(QString("%1x%2").arg(mScreen.getRect().width()).arg(mScreen.getRect().height()))
-    .arg(mOriginalImage.rect().contains(mScreen.getRect()) ? "ok" : "too small");
+    .arg(mScreen.getSizeAsString())
+    .arg(fullQualityCropPossible() ? "ok" : "too small");
     mStatusBarView->setText(text);
 }
 

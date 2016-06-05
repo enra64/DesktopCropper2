@@ -89,7 +89,7 @@
     <string>Select None</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+A</string>
+    <string>Ctrl+Shift+A</string>
    </property>
   </action>
  </widget>

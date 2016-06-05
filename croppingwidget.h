@@ -40,6 +40,8 @@ public:
     inline void setImageScale(double scale){ mImageScale = scale; }
 
     void setStatusbar(QStatusBar *s);
+
+    bool fullQualityCropPossible();
 signals:
 
 public slots:

@@ -1,7 +1,6 @@
 #include "screen.h"
 
-Screen::Screen() {
-}
+Screen::Screen() {}
 
 Screen::Screen(const Screen &o) {
     /// rectangle currently enclosing all monitors
@@ -18,6 +17,18 @@ Screen &Screen::operator=(const Screen &) {
 Screen::~Screen() {
     for(Monitor* m : mMonitors)
         delete m;
+}
+
+QRect Screen::getUnscaledRect() const {
+    Screen testScreen(*this);
+    testScreen.noCheckSetScale(1);
+    return testScreen.getRect();
+}
+
+QString Screen::getSizeAsString() const
+{
+    QSize s = getUnscaledRect().size();
+    return QString("%1x%2").arg(s.width()).arg(s.height());
 }
 
 const QRect& Screen::getRect() const {
@@ -47,7 +58,6 @@ bool Screen::removeMonitor(const QString &name) {
 }
 
 void Screen::addMonitor(const QString &name, const QSize &size, const QPoint &pos) {
-    // note to self: if you construct the element without "new" here, the monitorview dies before it is even used
     mMonitors.insert(name, new Monitor(size, pos));
     updateRect();
 }
@@ -66,22 +76,32 @@ void Screen::draw(QPainter& painter) {
         m->draw(painter);
 }
 
+double Screen::getMinScaleFactor()
+{
+    double minScale = INT_MAX;
+    for(Monitor* m : mMonitors)
+        minScale = std::min(minScale, m->getMinScale());
+    return minScale;
+}
+
+// TODO: add ctrl+z -.-.
+
 
 bool Screen::scaledMonitorsFitImage(const QImage& img) {
     return img.rect().contains(getRect());
 }
 
-void Screen::noCheckScaleBy(const double factor) {
+void Screen::noCheckScaleBy(const double factor, Scale which) {
     for(Monitor* m : mMonitors)
         if(m->isSelected())
-            m->scaleBy(factor);
+            m->scaleBy(factor, which);
     updateRect();
 }
 
-void Screen::noCheckSetScale(const double factor) {
+void Screen::noCheckSetScale(const double factor, Scale which) {
     for(Monitor* m : mMonitors)
         if(m->isSelected())
-            m->setScale(factor);
+            m->setScale(factor, which);
     updateRect();
 }
 
@@ -92,13 +112,12 @@ void Screen::noCheckMove(int dX, int dY) {
     updateRect();
 }
 
-void Screen::scaleBy(const double factor, const QImage& img) {
+void Screen::scaleBy(const double factor, const QImage& img, Scale which) {
     Screen testScreen(*this);
-    testScreen.noCheckScaleBy(factor);
+    testScreen.noCheckScaleBy(factor, which);
     if(testScreen.scaledMonitorsFitImage(img))
-        noCheckScaleBy(factor);
+        noCheckScaleBy(factor, which);
 }
-
 
 void Screen::setScale(const double factor, const QImage &img) {
     Screen testScreen(*this);
@@ -129,10 +148,7 @@ int Screen::getOuterMonitorBorder(Border b) {
     int val = botOrRightBorder ? 0 : INT_MAX;
     for(auto it = mMonitors.begin(); it != mMonitors.end(); it++) {
         int cVal = it.value()->getBorderPosition(b);
-        if(botOrRightBorder)
-            val = cVal > val ? cVal : val;
-        else
-            val = cVal < val ? cVal : val;
+        val = botOrRightBorder ? std::max(cVal, val) : std::min(cVal, val);
     }
     return val;
 }
