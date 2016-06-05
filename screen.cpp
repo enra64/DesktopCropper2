@@ -75,7 +75,7 @@ void Screen::draw(QPainter& painter) {
         m->draw(painter);
 }
 
-double Screen::getMinScaleFactor() {
+double Screen::getMinScaleFactor() const {
     double minScale = INT_MAX;
     for(Monitor* m : mMonitors)
         minScale = std::min(minScale, m->getMinScale());
@@ -86,28 +86,6 @@ double Screen::getMinScaleFactor() {
 
 bool Screen::scaledMonitorsFitImage(const QImage& img) {
     return img.rect().contains(getRect());
-}
-
-void Screen::noCheckScaleAllTo(const QImage& img) {
-    // what scale for the monitors to fit the image
-    QSize currentSize = mCurrentScreenRect.size();
-    QPoint currentPosition = mCurrentScreenRect.topLeft();
-
-    // add the position, otherwise, if pos != 0,0, we scale out of the image
-    currentSize += QSize(currentPosition.x(), currentPosition.y());
-
-    // scale to fit within the image
-    QSize targetSize = currentSize.scaled(img.size(), Qt::KeepAspectRatio);
-
-    // calculate scaled factor.
-    double factor = (double) targetSize.width() / (double) currentSize.width();
-
-    // scale all monitors
-    for(Monitor* m : mMonitors)
-        m->scaleBy(factor);
-
-    // update rect
-    updateRect();
 }
 
 void Screen::noCheckScaleBy(const double factor, Scale which) {
@@ -129,15 +107,6 @@ void Screen::noCheckMove(int dX, int dY) {
         if(m->isSelected())
             m->move(dX, dY);
     updateRect();
-}
-
-void Screen::scaleAllTo(const QImage& img) {
-    noCheckScaleAllTo(img);
-    return;
-    Screen testScreen(*this);
-    testScreen.noCheckScaleAllTo(img);
-    if(testScreen.scaledMonitorsFitImage(img))
-        noCheckScaleAllTo(img);
 }
 
 void Screen::scaleBy(const double factor, const QImage& img, Scale which) {

@@ -39,7 +39,7 @@ public:
 
     void setStatusbar(QStatusBar *s);
 
-    bool fullQualityCropPossible();
+    bool fullQualityCropPossible() const;
 
     void resetMonitors();
 signals:
@@ -69,7 +69,7 @@ private:
     void moveMonitors(int dX, int dY);
 
     /// calculate the scale between the original and the current image
-    double imageScale();
+    double imageScale() const ;
 
     /// image data
     QImage mCurrentImage, mOriginalImage;
@@ -80,7 +80,7 @@ private:
     Screen mScreen;
 
     /// update the status bar information
-    void updateStatusBar();
+    void updateStatusBar() const;
 };
 
 #endif // CROPPINGWIDGET_H
