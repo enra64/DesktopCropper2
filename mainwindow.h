@@ -28,6 +28,8 @@ private slots:
 
     void on_actionSelect_All_triggered();
 
+    void on_actionReset_Monitors_triggered();
+
 private:
     QString showFileOpenDialog();
     void showFileSaveDialog();

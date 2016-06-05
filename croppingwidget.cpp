@@ -93,7 +93,6 @@ void CroppingWidget::mouseReleaseEvent(QMouseEvent *e) {
         }
         update();
     }
-    // TODO: improve algorithm determining whether the image can be cropped out at ok resolution -> screen 1:1 monitors fit, plus scale does not reduce quality
 }
 
 bool CroppingWidget::fullQualityCropPossible(){
@@ -106,11 +105,19 @@ bool CroppingWidget::fullQualityCropPossible(){
     return true;
 }
 
+void CroppingWidget::resetMonitors()
+{
+    mScreen.setScale(1, mImage);
+    mScreen.scaleAllTo(mImage);
+    update();
+    updateStatusBar();
+}
+
 void CroppingWidget::scale() {
     mImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
     mImageScale = (double) mImage.width() / (double)mOriginalImage.width();
     // TODO: fix this shit. constantly breaks -.-
-    mScreen.setScale((double) mImage.width() / (double) mScreen.getRect().width(), mImage);
+    mScreen.scaleAllTo(mImage);
     updateStatusBar();
 }
 

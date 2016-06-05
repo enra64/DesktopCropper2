@@ -91,3 +91,8 @@ void MainWindow::on_actionSelect_All_triggered()
 {
     ui->cropper->selectAllMonitors(true);
 }
+
+void MainWindow::on_actionReset_Monitors_triggered()
+{
+    ui->cropper->resetMonitors();
+}

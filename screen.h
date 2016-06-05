@@ -47,6 +47,7 @@ public:
     void moveMonitors(int dX, int dY, const QImage &img);
     void setScale(const double factor, const QImage &img);
     void scaleBy(const double factor, const QImage &img, Scale which = Scale::BOTH);
+    void scaleAllTo(const QImage& img);
 
     /// copy screen, set scale to 1, return rect, delete copy.
     QRect getUnscaledRect() const;
@@ -58,6 +59,7 @@ private:
     bool scaledMonitorsFitImage(const QImage& img);
 
     // family of transformations without reverting if not valid
+    void noCheckScaleAllTo(const QImage& img);
     void noCheckScaleBy(const double factor, Scale which = Scale::BOTH);
     void noCheckSetScale(const double factor, Scale which = Scale::BOTH);
     void noCheckMove(int dX, int dY);

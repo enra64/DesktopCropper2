@@ -42,6 +42,8 @@ public:
     void setStatusbar(QStatusBar *s);
 
     bool fullQualityCropPossible();
+
+    void resetMonitors();
 signals:
 
 public slots:

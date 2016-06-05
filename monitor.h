@@ -63,14 +63,13 @@ public:
         // copy our monitor out of the image
         QImage cropped = scaled.copy(cropRect);
 
-        //
+        // save
         return cropped.save(extendedPath, "jpg", 100);
     }
 
     bool contains(const QPoint& pos) const {
         return scaledRect().contains(pos);
     }
-
 
     //scale control
     void setScale(double factor, Scale which = Scale::BOTH) {

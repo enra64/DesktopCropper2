@@ -91,6 +91,28 @@ bool Screen::scaledMonitorsFitImage(const QImage& img) {
     return img.rect().contains(getRect());
 }
 
+void Screen::noCheckScaleAllTo(const QImage& img) {
+    // what scale for the monitors to fit the image
+    QSize currentSize = mCurrentScreenRect.size();
+    QPoint currentPosition = mCurrentScreenRect.topLeft();
+
+    // add the position, otherwise, if pos != 0,0, we scale out of the image
+    currentSize += QSize(currentPosition.x(), currentPosition.y());
+
+    // scale to fit within the image
+    QSize targetSize = currentSize.scaled(img.size(), Qt::KeepAspectRatio);
+
+    // calculate scaled factor.
+    double factor = (double) targetSize.width() / (double) currentSize.width();
+
+    // scale all monitors
+    for(Monitor* m : mMonitors)
+        m->scaleBy(factor);
+
+    // update rect
+    updateRect();
+}
+
 void Screen::noCheckScaleBy(const double factor, Scale which) {
     for(Monitor* m : mMonitors)
         if(m->isSelected())
@@ -110,6 +132,15 @@ void Screen::noCheckMove(int dX, int dY) {
         if(m->isSelected())
             m->move(dX, dY);
     updateRect();
+}
+
+void Screen::scaleAllTo(const QImage& img) {
+    noCheckScaleAllTo(img);
+    return;
+    Screen testScreen(*this);
+    testScreen.noCheckScaleAllTo(img);
+    if(testScreen.scaledMonitorsFitImage(img))
+        noCheckScaleAllTo(img);
 }
 
 void Screen::scaleBy(const double factor, const QImage& img, Scale which) {
@@ -134,13 +165,10 @@ void Screen::moveMonitors(int dX, int dY, const QImage& img) {
 }
 
 void Screen::updateRect() {
-    int left = getOuterMonitorBorder(Border::LEFT_BORDER);
-    int top = getOuterMonitorBorder(Border::TOP_BORDER);
+    QPoint topLeft(getOuterMonitorBorder(Border::LEFT_BORDER), getOuterMonitorBorder(Border::TOP_BORDER));
+    QPoint bottomRight(getOuterMonitorBorder(Border::RIGHT_BORDER), getOuterMonitorBorder(Border::BOTTOM_BORDER));
 
-    int width = getOuterMonitorBorder(Border::RIGHT_BORDER) - left;
-    int height = getOuterMonitorBorder(Border::BOTTOM_BORDER) - top;
-
-    mCurrentScreenRect = QRect(left, top, 1 + width, 1 + height);
+    mCurrentScreenRect = QRect(topLeft, bottomRight);
 }
 
 int Screen::getOuterMonitorBorder(Border b) {
