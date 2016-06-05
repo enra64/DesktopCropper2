@@ -97,6 +97,9 @@
    <property name="text">
     <string>Reset Monitors</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

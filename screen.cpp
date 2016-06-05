@@ -25,8 +25,7 @@ QRect Screen::getUnscaledRect() const {
     return testScreen.getRect();
 }
 
-QString Screen::getSizeAsString() const
-{
+QString Screen::getSizeAsString() const {
     QSize s = getUnscaledRect().size();
     return QString("%1x%2").arg(s.width()).arg(s.height());
 }
@@ -76,8 +75,7 @@ void Screen::draw(QPainter& painter) {
         m->draw(painter);
 }
 
-double Screen::getMinScaleFactor()
-{
+double Screen::getMinScaleFactor() {
     double minScale = INT_MAX;
     for(Monitor* m : mMonitors)
         minScale = std::min(minScale, m->getMinScale());
@@ -85,7 +83,6 @@ double Screen::getMinScaleFactor()
 }
 
 // TODO: add ctrl+z -.-.
-
 
 bool Screen::scaledMonitorsFitImage(const QImage& img) {
     return img.rect().contains(getRect());

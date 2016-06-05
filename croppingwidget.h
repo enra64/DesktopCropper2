@@ -37,8 +37,6 @@ public:
 
     bool loadImage(const QFile &path);
 
-    inline void setImageScale(double scale){ mImageScale = scale; }
-
     void setStatusbar(QStatusBar *s);
 
     bool fullQualityCropPossible();
@@ -57,20 +55,31 @@ protected:
     void mouseReleaseEvent(QMouseEvent*e);
 
 private:
+    // mouse stuff
     bool mMousePressed = false;
     bool mMouseMoved = false;
     QPoint mMousePressBeginPosition;
 
+    /// is there an image loaded?
     bool mImageLoaded = false;
+
     void scale();
+
+    /// Moves monitors by delta
     void moveMonitors(int dX, int dY);
-    //double mMonitorScale = 1;
-    double mImageScale = 1;
-    QImage mImage;
+
+    /// calculate the scale between the original and the current image
+    double imageScale();
+
+    /// image data
+    QImage mCurrentImage, mOriginalImage;
+
+    /// pointer to the status bar view available for showing some relevant data
     QLabel* mStatusBarView;
-    QImage mOriginalImage;
 
     Screen mScreen;
+
+    /// update the status bar information
     void updateStatusBar();
 };
 

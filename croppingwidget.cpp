@@ -30,12 +30,12 @@ void CroppingWidget::selectAllMonitors(bool select)
 }
 
 void CroppingWidget::saveCrops(const QFile &path) {
-    mScreen.saveCrops(path, mOriginalImage, mImageScale);
+    mScreen.saveCrops(path, mOriginalImage, imageScale());
 }
 
 void CroppingWidget::paintEvent(QPaintEvent * /* event */) {
     QPainter painter(this);
-    painter.drawImage(0, 0, mImage);
+    painter.drawImage(0, 0, mCurrentImage);
 
     if(mImageLoaded)
         mScreen.draw(painter);
@@ -55,7 +55,7 @@ void CroppingWidget::wheelEvent(QWheelEvent *e) {
         s = Scale::Y;
     else if (e->modifiers() & Qt::AltModifier)
         s = Scale::X;
-    mScreen.scaleBy(e->angleDelta().y() > 0 ? 0.98 : 1.02, mImage, s);
+    mScreen.scaleBy(e->angleDelta().y() > 0 ? 0.98 : 1.02, mCurrentImage, s);
     updateStatusBar();
     update();
 }
@@ -98,7 +98,7 @@ void CroppingWidget::mouseReleaseEvent(QMouseEvent *e) {
 bool CroppingWidget::fullQualityCropPossible(){
     double maxScreenScaleFactor = mScreen.getMinScaleFactor();
     // because of this: scale = (imageScale / mXScale) in Monitor::crop()
-    if(maxScreenScaleFactor < mImageScale)
+    if(maxScreenScaleFactor < imageScale())
         return false;
     // because the user cannot make the monitors bigger than the start, the monitors must either fit or be scaled down, so
     // above condition hits
@@ -107,23 +107,22 @@ bool CroppingWidget::fullQualityCropPossible(){
 
 void CroppingWidget::resetMonitors()
 {
-    mScreen.setScale(1, mImage);
-    mScreen.scaleAllTo(mImage);
     update();
     updateStatusBar();
 }
 
 void CroppingWidget::scale() {
-    mImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
-    mImageScale = (double) mImage.width() / (double)mOriginalImage.width();
-    // TODO: fix this shit. constantly breaks -.-
-    mScreen.scaleAllTo(mImage);
+    double prevScale = imageScale();
+    mCurrentImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
+
+    mScreen.scaleBy(imageScale() / prevScale, mCurrentImage);
+    //mScreen.scaleAllTo(mImage);
     updateStatusBar();
 }
 
 void CroppingWidget::updateStatusBar(){
     QString text = QString("Scales: Image: %1, Monitors: %2; Sizes: Image: %3, Screen: %4 -> %5")
-    .arg(mImageScale)
+    .arg(imageScale())
     .arg(mScreen.getMinScaleFactor())
     .arg(QString("%1x%2").arg(mOriginalImage.width()).arg(mOriginalImage.height()))
     .arg(mScreen.getSizeAsString())
@@ -132,12 +131,17 @@ void CroppingWidget::updateStatusBar(){
 }
 
 void CroppingWidget::moveMonitors(int dX, int dY) {
-    mScreen.moveMonitors(dX, dY, mImage);
+    mScreen.moveMonitors(dX, dY, mCurrentImage);
     update();
 }
 
+double CroppingWidget::imageScale()
+{
+    return (double) mCurrentImage.width() / (double)mOriginalImage.width();
+}
+
 bool CroppingWidget::loadImage(const QFile &path) {
-    bool success = mImage.load(path.fileName());
+    bool success = mCurrentImage.load(path.fileName());
     if(success)
         mImageLoaded = true;
     mOriginalImage.load(path.fileName());
