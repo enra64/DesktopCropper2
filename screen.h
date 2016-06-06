@@ -9,9 +9,9 @@
 
 #include <iostream>
 
-#include "monitorview.h"
+#include "monitor.h"
 
-typedef QMap<QString, MonitorView*> MonitorMap;
+typedef QMap<QString, Monitor*> MonitorMap;
 
 class Screen {
 public:
@@ -19,48 +19,73 @@ public:
     Screen(const Screen& o);
     Screen& operator=(const Screen& o);
     ~Screen();
-    const QRect &getRect() const;
 
-    void saveCrops(const QFile &path, const QImage &img, double imageScale, double monitorScale);
+    /*
+     * *************************************************************************************** PUBLIC NON CONST FUNCTIONS
+     */
 
-    const MonitorView& getMonitor(const QString& name);
-    QString getMonitorName(QPoint clickPosition);
+    // selection controls
+    void select(const QString& which, bool select = true);
+    void selectAll(bool select = true);
+
+    // family of possible transformations. If the transformed screen would not fit the img, they revert the action.
+    void moveMonitors(int dX, int dY, const QImage &img);
+    void setScale(const double factor, const QImage &img);
+    void scaleBy(const double factor, const QImage &img, Scale which = Scale::BOTH);
+
+    // monitor control
     bool removeMonitor(const QString& name);
     void addMonitor(const QString& name, const QSize &size, const QPoint &pos);
 
-    void moveMonitors(int dX, int dY, const QImage &img);
+    /*
+     * *************************************************************************************** PUBLIC CONST FUNCTIONS
+     */
 
-    void select(const QString& which, bool select = true);
-    void selectAll(bool select = true);
-    bool isSelected(const QString& which) { return getMonitor(which).isSelected(); }
 
-    void draw(QPainter &painter);
+    /// Returns the rectangle representing the screen
+    const QRect &getRect() const;
 
-    void setScale(const double factor) {
-        mMonitorScale = factor;
-        update();
-    }
+    /// Save all monitor crops
+    void saveCrops(const QFile &path, const QImage &img, double imageScale) const;
 
-    void scaleBy(const double factor) {
-        mMonitorScale *= factor;
-        update();
-    }
+    // monitor retrieval
+    const Monitor& getMonitor(const QString& name) const;
+    QString getMonitorName(QPoint clickPosition) const;
 
-    inline const double& getMonitorScale() const {
-        return mMonitorScale;
-    }
+    /// Return if "which" is selected
+    bool isSelected(const QString& which) const;
 
+    // draw all screens onto the painter
+    void draw(QPainter &painter) const;
+
+    /// Return the maximum scale factor currently in use by any monitor
+    double getMinScaleFactor() const;
+
+    /// copy screen, set scale to 1, return rect, delete copy.
+    QRect getUnscaledRect() const;
+
+    /// convert the rect size to string
+    QString getSizeAsString() const;
 private:
+    /// Check whether all monitors (scaled) fit into img
+    bool scaledMonitorsFitImage(const QImage& img) const;
+
+    // family of transformations without reverting if not valid
+    void noCheckScaleBy(const double factor, Scale which = Scale::BOTH);
+    void noCheckSetScale(const double factor, Scale which = Scale::BOTH);
+    void noCheckMove(int dX, int dY);
+
+    /// update rectangle enclosing all monitors
+    void updateRect();
+
+    /// get outer border of the monitor sitting out the to border b
+    int getOuterMonitorBorder(Border b) const;
+
+    /// rectangle currently enclosing all monitors
     QRect mCurrentScreenRect;
-    void update();
 
-    MonitorMap::iterator getRightMostMonitor();
-    MonitorMap::iterator getLeftMostMonitor();
-    MonitorMap::iterator getTopMostMonitor();
-    MonitorMap::iterator getBottomMostMonitor();
-
+    /// QMap of currently known monitors
     MonitorMap mMonitors;
-    double mMonitorScale = 1;
 };
 
 #endif // SCREEN_H

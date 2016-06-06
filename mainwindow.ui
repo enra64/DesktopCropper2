@@ -47,6 +47,7 @@
     </property>
     <addaction name="actionSelect_All"/>
     <addaction name="actionSelect_None"/>
+    <addaction name="actionReset_Monitors"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -89,7 +90,15 @@
     <string>Select None</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+A</string>
+    <string>Ctrl+Shift+A</string>
+   </property>
+  </action>
+  <action name="actionReset_Monitors">
+   <property name="text">
+    <string>Reset Monitors</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>
