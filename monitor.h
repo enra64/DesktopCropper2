@@ -34,14 +34,14 @@ public:
         throw "unknown border";
     }
 
-    void draw(QPainter& painter) {
+    void draw(QPainter& painter) const {
         const QRect modelRECT = scaledRect();
         QColor color = mIsSelected ? QColor::fromRgb(0, 255, 0) : QColor::fromRgb(255, 255, 255);
         painter.setPen(color);
         painter.drawRect(modelRECT);
     }
 
-    bool saveCrop(const QString& p, const QImage& originalImage, double imageScale) {
+    bool saveCrop(const QString& p, const QImage& originalImage, double imageScale) const {
         // scale must be 1, or the size would not be for example 1920x1080
         QRect cropRect = scaledRect(1, 1);
 

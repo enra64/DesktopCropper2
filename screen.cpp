@@ -34,16 +34,16 @@ const QRect& Screen::getRect() const {
     return mCurrentScreenRect;
 }
 
-void Screen::saveCrops(const QFile &path, const QImage& img, double imageScale) {
+void Screen::saveCrops(const QFile &path, const QImage& img, double imageScale) const {
     for(auto i = mMonitors.begin(); i != mMonitors.end(); i++)
         i.value()->saveCrop(path.fileName() + "_" + i.key(), img, imageScale);
 }
 
-const Monitor &Screen::getMonitor(const QString &name) {
+const Monitor& Screen::getMonitor(const QString &name) const {
     return *mMonitors.find(name).value();
 }
 
-QString Screen::getMonitorName(QPoint clickPosition) {
+QString Screen::getMonitorName(QPoint clickPosition) const {
     for(auto it = mMonitors.begin(); it != mMonitors.end(); it++)
         if(it.value()->contains(clickPosition))
             return it.key();
@@ -70,7 +70,11 @@ void Screen::selectAll(bool select) {
         m->setSelected(select);
 }
 
-void Screen::draw(QPainter& painter) {
+bool Screen::isSelected(const QString &which) const {
+    return getMonitor(which).isSelected();
+}
+
+void Screen::draw(QPainter& painter) const {
     for(Monitor* m : mMonitors)
         m->draw(painter);
 }
@@ -84,7 +88,7 @@ double Screen::getMinScaleFactor() const {
 
 // TODO: add ctrl+z -.-.
 
-bool Screen::scaledMonitorsFitImage(const QImage& img) {
+bool Screen::scaledMonitorsFitImage(const QImage& img) const {
     return img.rect().contains(getRect());
 }
 
@@ -137,7 +141,7 @@ void Screen::updateRect() {
     mCurrentScreenRect = QRect(topLeft, bottomRight);
 }
 
-int Screen::getOuterMonitorBorder(Border b) {
+int Screen::getOuterMonitorBorder(Border b) const {
     bool botOrRightBorder = b == Border::BOTTOM_BORDER || b == Border::RIGHT_BORDER;
     int val = botOrRightBorder ? 0 : INT_MAX;
     for(auto it = mMonitors.begin(); it != mMonitors.end(); it++) {

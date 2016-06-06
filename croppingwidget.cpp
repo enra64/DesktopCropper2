@@ -132,15 +132,6 @@ void CroppingWidget::updateStatusBar() const {
     mStatusBarView->setText(text);
 }
 
-void CroppingWidget::moveMonitors(int dX, int dY) {
-    mScreen.moveMonitors(dX, dY, mCurrentImage);
-    update();
-}
-
-double CroppingWidget::imageScale() const {
-    return (double) mCurrentImage.width() / (double)mOriginalImage.width();
-}
-
 bool CroppingWidget::loadImage(const QFile &path) {
     bool success = mCurrentImage.load(path.fileName());
     if(success)
@@ -151,6 +142,15 @@ bool CroppingWidget::loadImage(const QFile &path) {
     return success;
 }
 
+void CroppingWidget::moveMonitors(int dX, int dY) {
+    mScreen.moveMonitors(dX, dY, mCurrentImage);
+    update();
+}
+
 void CroppingWidget::setStatusbar(QStatusBar *s) {
     s->addWidget(mStatusBarView);
+}
+
+double CroppingWidget::imageScale() const {
+    return (double) mCurrentImage.width() / (double)mOriginalImage.width();
 }
