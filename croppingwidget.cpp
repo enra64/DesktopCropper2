@@ -15,21 +15,16 @@ void CroppingWidget::addMonitor(const QString &name, const QSize& size, const QP
     update();
 }
 
-const Monitor& CroppingWidget::getMonitor(const QString &name) {
-    return mScreen.getMonitor(name);
-}
-
-QString CroppingWidget::getMonitorName(QPoint clickPosition) {
+QString CroppingWidget::getMonitorName(QPoint clickPosition) const {
     return mScreen.getMonitorName(clickPosition);
 }
 
-void CroppingWidget::selectAllMonitors(bool select)
-{
+void CroppingWidget::selectAllMonitors(bool select) {
     mScreen.selectAll(select);
     update();
 }
 
-void CroppingWidget::saveCrops(const QFile &path) {
+void CroppingWidget::saveCrops(const QFile &path) const {
     mScreen.saveCrops(path, mOriginalImage, imageScale());
 }
 
@@ -46,7 +41,7 @@ void CroppingWidget::resizeEvent(QResizeEvent *event) {
     if(mOriginalImage.isNull())
         return;
 
-    scale();
+    scaleToWindowSize();
 }
 
 void CroppingWidget::wheelEvent(QWheelEvent *e) {
@@ -61,7 +56,6 @@ void CroppingWidget::wheelEvent(QWheelEvent *e) {
 }
 
 void CroppingWidget::mousePressEvent(QMouseEvent *e) {
-    mMousePressed = true;
     mMousePressBeginPosition = e->pos();
     mMouseMoved = false;
 }
@@ -74,8 +68,6 @@ void CroppingWidget::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void CroppingWidget::mouseReleaseEvent(QMouseEvent *e) {
-    mMousePressed = false;
-
     // clicked?
     if(mMouseMoved || !mImageLoaded)
         return;
@@ -108,13 +100,12 @@ bool CroppingWidget::fullQualityCropPossible() const {
     return true;
 }
 
-void CroppingWidget::resetMonitors()
-{
+void CroppingWidget::resetMonitors() {
     update();
     updateStatusBar();
 }
 
-void CroppingWidget::scale() {
+void CroppingWidget::scaleToWindowSize() {
     double prevScale = imageScale();
     mCurrentImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
 
@@ -137,7 +128,7 @@ bool CroppingWidget::loadImage(const QFile &path) {
     if(success)
         mImageLoaded = true;
     mOriginalImage.load(path.fileName());
-    scale();
+    scaleToWindowSize();
     update();
     return success;
 }

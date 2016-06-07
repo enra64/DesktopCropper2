@@ -23,28 +23,50 @@ public:
 
     ~CroppingWidget();
 
+    /**
+     * @brief saveCrops Saves crops from the image
+     * @param path where to save to
+     */
+    void saveCrops(const QFile &path) const;
+
+    /**
+     * @brief removeMonitor
+     * @param name name of the monitor to be removed
+     * @return whether the monitor was found
+     */
     bool removeMonitor(const QString& name);
 
+    /**
+     * @brief addMonitor
+     * @param name what id to use for the monitor
+     * @param size what size does the monitor have
+     * @param pos at what position is the monitor
+     */
     void addMonitor(const QString& name, const QSize &size, const QPoint &pos);
 
-    const Monitor& getMonitor(const QString& name);
-
-    QString getMonitorName(QPoint clickPosition);
-
+    /**
+     * @brief selectAllMonitors set selection state for all monitors
+     * @param select future selection state
+     */
     void selectAllMonitors(bool select);
 
-    void saveCrops(const QFile &path);
-
+    /**
+     * @brief loadImage load the image to be cropped
+     * @param path where the image is to be found
+     * @return load operation success
+     */
     bool loadImage(const QFile &path);
 
+    /**
+     * @brief setStatusbar saves a pointer to the statusbar so that we can update it
+     * @param s status bar reference
+     */
     void setStatusbar(QStatusBar *s);
 
-    bool fullQualityCropPossible() const;
-
+    /**
+     * @brief resetMonitors reset each monitor scale to x=y, maximum fit, and 0x0 position
+     */
     void resetMonitors();
-signals:
-
-public slots:
 
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
@@ -55,31 +77,75 @@ protected:
     void mouseReleaseEvent(QMouseEvent*e);
 
 private:
-    // mouse stuff
-    bool mMousePressed = false;
+    /**
+     * @brief mMouseMoved has the mouse moved since the last click
+     */
     bool mMouseMoved = false;
+
+    /**
+     * @brief mMousePressBeginPosition Where did the last mouse click occur
+     */
     QPoint mMousePressBeginPosition;
 
-    /// is there an image loaded?
+    /**
+     * @brief mImageLoaded image currently loaded
+     */
     bool mImageLoaded = false;
 
-    void scale();
+    /**
+     * @brief scaleToWindowSize scales the image to widget size, and the monitors by the factor of difference
+     */
+    void scaleToWindowSize();
 
-    /// Moves monitors by delta
+    /**
+     * @brief fullQualityCropPossible whether the crop can be done without quality loss
+     * @return true if the monitors can be cropped without scaling the image > 1
+     */
+    bool fullQualityCropPossible() const;
+
+    /**
+     * @brief getMonitorName Translates from a clicked location to the monitor at that position
+     * @param clickPosition where the concerned monitor was clicked
+     * @return name of the clicked monitor
+     */
+    QString getMonitorName(QPoint clickPosition) const;
+
+    /**
+     * @brief moveMonitors Move the monitors
+     * @param dX x delta
+     * @param dY y delta
+     */
     void moveMonitors(int dX, int dY);
 
-    /// calculate the scale between the original and the current image
+    /**
+     * @brief imageScale calculate the scale from the original to the current image
+     * @return currentSize / oldSize
+     */
     double imageScale() const ;
 
-    /// image data
-    QImage mCurrentImage, mOriginalImage;
+    /**
+     * @brief mCurrentImage the original image, but with all transformations applied
+     */
+    QImage mCurrentImage;
 
-    /// pointer to the status bar view available for showing some relevant data
+    /**
+     * @brief mOriginalImage the original image without any applied transformations
+     */
+    QImage mOriginalImage;
+
+    /**
+     * @brief mStatusBarView Status bar for displaying information
+     */
     QLabel* mStatusBarView;
 
+    /**
+     * @brief mScreen object handling all things monitor
+     */
     Screen mScreen;
 
-    /// update the status bar information
+    /**
+     * @brief updateStatusBar refresh the informatino shown on the status bar
+     */
     void updateStatusBar() const;
 };
 
