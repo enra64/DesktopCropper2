@@ -83,7 +83,7 @@ void CroppingWidget::mouseReleaseEvent(QMouseEvent *e) {
     if(e->modifiers() & Qt::ControlModifier || e->modifiers() & Qt::ShiftModifier)
         mScreen.select(clickedMonitorName, !mScreen.isSelected(clickedMonitorName));
     // select single monitor
-    else{
+    else {
         mScreen.selectAll(false);
         mScreen.select(clickedMonitorName);
     }
@@ -105,6 +105,18 @@ void CroppingWidget::resetMonitors() {
     updateStatusBar();
 }
 
+void CroppingWidget::onUndo() {
+    mScreen.undo();
+    update();
+    updateStatusBar();
+}
+
+void CroppingWidget::onRedo() {
+    mScreen.redo();
+    update();
+    updateStatusBar();
+}
+
 void CroppingWidget::scaleToWindowSize() {
     double prevScale = imageScale();
     mCurrentImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
@@ -115,11 +127,11 @@ void CroppingWidget::scaleToWindowSize() {
 
 void CroppingWidget::updateStatusBar() const {
     QString text = QString("Scales: Image: %1, Monitors: %2; Sizes: Image: %3, Screen: %4 -> %5")
-    .arg(imageScale())
-    .arg(mScreen.getMinScaleFactor())
-    .arg(QString("%1x%2").arg(mOriginalImage.width()).arg(mOriginalImage.height()))
-    .arg(mScreen.getSizeAsString())
-    .arg(fullQualityCropPossible() ? "ok" : "too small");
+                   .arg(imageScale())
+                   .arg(mScreen.getMinScaleFactor())
+                   .arg(QString("%1x%2").arg(mOriginalImage.width()).arg(mOriginalImage.height()))
+                   .arg(mScreen.getSizeAsString())
+                   .arg(fullQualityCropPossible() ? "ok" : "too small");
     mStatusBarView->setText(text);
 }
 

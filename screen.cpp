@@ -1,7 +1,5 @@
 #include "screen.h"
 
-Screen::Screen() {}
-
 Screen::Screen(const Screen &o) {
     /// rectangle currently enclosing all monitors
     mCurrentScreenRect = o.mCurrentScreenRect;

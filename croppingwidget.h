@@ -13,7 +13,7 @@
 #include <iostream>
 
 #include "monitor.h"
-#include "screen.h"
+#include "screenundowrapper.h"
 
 class CroppingWidget : public QWidget
 {
@@ -68,9 +68,20 @@ public:
      */
     void resetMonitors();
 
+    /**
+     * @brief onUndo undo the last action
+     */
+    void onUndo();
+
+    /**
+     * @brief onRedo redo the last action
+     */
+    void onRedo();
+
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent* event);
+
     void wheelEvent(QWheelEvent* event);
     void mousePressEvent(QMouseEvent*e);
     void mouseMoveEvent(QMouseEvent* e);
@@ -141,7 +152,7 @@ private:
     /**
      * @brief mScreen object handling all things monitor
      */
-    Screen mScreen;
+    ScreenUndoWrapper mScreen;
 
     /**
      * @brief updateStatusBar refresh the informatino shown on the status bar

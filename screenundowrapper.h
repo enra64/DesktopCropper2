@@ -1,27 +1,48 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef SCREENUNDOWRAPPER_H
+#define SCREENUNDOWRAPPER_H
 
-#include <QMap>
-#include <QRect>
-#include <QSize>
-#include <QFile>
-#include <QPoint>
+#include "screen.h"
 
-#include <iostream>
+typedef std::list<Screen*> ScreenDList;
 
-#include "monitor.h"
-
-typedef QMap<QString, Monitor*> MonitorMap;
-
-class Screen {
+class ScreenUndoWrapper
+{
 public:
-    Screen(){}
-    Screen(const Screen& o);
-    Screen& operator=(const Screen& o);
-    ~Screen();
+    ScreenUndoWrapper();
 
     /*
-     * *************************************************************************************** PUBLIC NON CONST FUNCTIONS
+     *
+     *
+     *
+     *
+     * ************************************************************************************** UNDO FUNCTIONS
+     *
+     *
+     *
+     *
+     */
+
+    /**
+     * @brief undo undo the last action
+     */
+    void undo();
+
+    /**
+     * @brief redo undo the last undo
+     */
+    void redo();
+
+    /*
+     *
+     *
+     *
+     *
+     * *************************************************************************************** PUBLIC NON CONST SCREEN FUNCTIONS
+     *
+     *
+     *
+     *
+     *
      */
 
     /**
@@ -76,7 +97,16 @@ public:
     void addMonitor(const QString& name, const QSize &size, const QPoint &pos);
 
     /*
-     * *************************************************************************************** PUBLIC CONST FUNCTIONS
+     *
+     *
+     *
+     *
+     * *************************************************************************************** PUBLIC CONST SCREEN FUNCTIONS
+     *
+     *
+     *
+     *
+     *
      */
 
 
@@ -97,7 +127,7 @@ public:
      * @param name The name as it was given to the monitor
      * @return  Requested monitor reference
      */
-    const Monitor& getMonitor(const QString& name) const;
+    const Monitor &getMonitor(const QString& name) const;
 
     /**
      * @brief getMonitorName Translates from a clicked location to the monitor at that position
@@ -136,57 +166,21 @@ public:
      * @return string representation of screen size
      */
     QString getSizeAsString() const;
+
 private:
-    /**
-     * @brief scaledMonitorsFitImage Check whether this screen fits into an image
-     * @param img image that the screen must fit into
-     * @return true if the screen fits
-     */
-    bool scaledMonitorsFitImage(const QImage& img) const;
 
     /**
-     * @brief noCheckScaleBy Scale the screen without checking for validity
-     * @param factor scale factor
-     * @param which which axis to scale
+     * @brief saveState Push a copy of the current object state, which we can then modify. If there are items in between the list start and our current position, erase those, they are undone.
      */
-    void noCheckScaleBy(const double factor, Scale which = Scale::BOTH);
+    void saveState();
 
-    /**
-     * @brief noCheckSetScale Scale the screen without checking for validity
-     * @param factor scale factor
-     * @param which which axis to scale
-     */
-    void noCheckSetScale(const double factor, Scale which = Scale::BOTH);
+    bool mSavedBeginningOfScaleBy = false, mSavedBeginningOfSetScale = false, mSavedBeginningOfMove = false;
 
-    /**
-     * @brief noCheckMove Move the screen without checking for validity
-     * @param dX x delta
-     * @param dY y delta
-     */
-    void noCheckMove(int dX, int dY);
+    Screen *getCurrentScreen() const;
 
-    /**
-     * @brief updateRect update the cached rectangle enclosing all monitors
-     */
-    void updateRect();
+    ScreenDList::iterator mCurrentPosition;
 
-    /// get outer border of the monitor sitting out the to border b
-    /**
-     * @brief getOuterMonitorBorder Get border of the screen, so the outermost monitors define the border
-     * @param b which border to check
-     * @return int position on the x or y axis
-     */
-    int getOuterMonitorBorder(Border b) const;
-
-    /**
-     * @brief mCurrentScreenRect rectangle currently enclosing all monitors
-     */
-    QRect mCurrentScreenRect;
-
-    /**
-     * @brief mMonitors QMap of currently known monitors
-     */
-    MonitorMap mMonitors;
+    ScreenDList mScreenList;
 };
 
-#endif // SCREEN_H
+#endif // SCREENUNDOWRAPPER_H

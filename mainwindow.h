@@ -30,6 +30,10 @@ private slots:
 
     void on_actionReset_Monitors_triggered();
 
+    void on_actionRedo_triggered();
+
+    void on_actionUndo_triggered();
+
 private:
     QString showFileOpenDialog();
     void showFileSaveDialog();

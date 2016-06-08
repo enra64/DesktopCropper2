@@ -16,11 +16,13 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     croppingwidget.cpp \
-    screen.cpp
+    screen.cpp \
+    screenundowrapper.cpp
 
 HEADERS  += mainwindow.h \
     croppingwidget.h \
     screen.h \
-    monitor.h
+    monitor.h \
+    screenundowrapper.h
 
 FORMS    += mainwindow.ui

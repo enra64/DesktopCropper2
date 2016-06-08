@@ -96,3 +96,13 @@ void MainWindow::on_actionReset_Monitors_triggered()
 {
     ui->cropper->resetMonitors();
 }
+
+void MainWindow::on_actionRedo_triggered()
+{
+    ui->cropper->onRedo();
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+    ui->cropper->onUndo();
+}
