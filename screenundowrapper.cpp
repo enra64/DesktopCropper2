@@ -1,20 +1,19 @@
 #include "screenundowrapper.h"
 
 ScreenUndoWrapper::ScreenUndoWrapper() {
-
     mScreenList.push_front(new Screen());
     mCurrentPosition = mScreenList.begin();
 }
 
 void ScreenUndoWrapper::undo() {
-    // may die if we can go more to the front than begin
-    mCurrentPosition--;
+
+    if(mCurrentPosition != --mScreenList.end())
+        mCurrentPosition++;
 }
 
 void ScreenUndoWrapper::redo() {
-    mCurrentPosition++;
-    if(mCurrentPosition == mScreenList.end())
-        mCurrentPosition--;
+    // may die if we can go more to the front than begin
+    mCurrentPosition--;
 }
 
 /**
@@ -23,7 +22,8 @@ void ScreenUndoWrapper::redo() {
  */
 void ScreenUndoWrapper::saveState() {
     // remove everything newer than current position
-    mScreenList.erase(++mCurrentPosition, mScreenList.end());
+    if(mCurrentPosition != mScreenList.begin())
+        mScreenList.erase(mScreenList.begin(), ++mCurrentPosition);
     // add a new state
     mScreenList.push_front(new Screen(*mScreenList.front()));
     // point current position to newest state
