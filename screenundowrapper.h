@@ -25,12 +25,12 @@ public:
     /**
      * @brief undo undo the last action
      */
-    void undo();
+    void undo(const QImage &img);
 
     /**
      * @brief redo undo the last undo
      */
-    void redo();
+    void redo(const QImage& img);
 
     /*
      *

@@ -136,7 +136,7 @@ public:
      * @return string representation of screen size
      */
     QString getSizeAsString() const;
-private:
+
     /**
      * @brief scaledMonitorsFitImage Check whether this screen fits into an image
      * @param img image that the screen must fit into
@@ -144,6 +144,7 @@ private:
      */
     bool scaledMonitorsFitImage(const QImage& img) const;
 
+private:
     /**
      * @brief noCheckScaleBy Scale the screen without checking for validity
      * @param factor scale factor

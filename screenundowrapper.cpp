@@ -5,15 +5,16 @@ ScreenUndoWrapper::ScreenUndoWrapper() {
     mCurrentPosition = mScreenList.begin();
 }
 
-void ScreenUndoWrapper::undo() {
-
-    if(mCurrentPosition != --mScreenList.end())
-        mCurrentPosition++;
+void ScreenUndoWrapper::undo(const QImage& img) {
+    auto end = --mScreenList.end();
+    // go back to last valid state
+    while(mCurrentPosition != end && !(*++mCurrentPosition)->scaledMonitorsFitImage(img));
 }
 
-void ScreenUndoWrapper::redo() {
-    // may die if we can go more to the front than begin
-    mCurrentPosition--;
+void ScreenUndoWrapper::redo(const QImage& img) {
+    auto begin = mScreenList.begin();
+    // go forward to next valid state
+    while(mCurrentPosition != begin && !(*--mCurrentPosition)->scaledMonitorsFitImage(img));
 }
 
 /**

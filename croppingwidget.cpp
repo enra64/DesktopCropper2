@@ -10,7 +10,6 @@ CroppingWidget::~CroppingWidget() {
 }
 
 void CroppingWidget::addMonitor(const QString &name, const QSize& size, const QPoint& pos) {
-    // note to self: if you construct the element without "new" here, the monitorview dies before it is even used
     mScreen.addMonitor(name, size, pos);
     update();
 }
@@ -106,17 +105,18 @@ void CroppingWidget::resetMonitors() {
 }
 
 void CroppingWidget::onUndo() {
-    mScreen.undo();
+    mScreen.undo(mCurrentImage);
     update();
     updateStatusBar();
 }
 
 void CroppingWidget::onRedo() {
-    mScreen.redo();
+    mScreen.redo(mCurrentImage);
     update();
     updateStatusBar();
 }
 
+// this function scales the monitors up when they are bigger than the image :D might have to fix that sometime...
 void CroppingWidget::scaleToWindowSize() {
     double prevScale = imageScale();
     mCurrentImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);
