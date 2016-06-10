@@ -2,8 +2,9 @@
 #define SCREENUNDOWRAPPER_H
 
 #include "screen.h"
+#include <memory>
 
-typedef std::list<Screen*> ScreenDList;
+typedef std::list<std::shared_ptr<Screen>> ScreenDList;
 
 class ScreenUndoWrapper
 {
@@ -176,7 +177,7 @@ private:
 
     bool mSavedBeginningOfScaleBy = false, mSavedBeginningOfSetScale = false, mSavedBeginningOfMove = false;
 
-    Screen *getCurrentScreen() const;
+    std::shared_ptr<Screen> getCurrentScreen() const;
 
     ScreenDList::iterator mCurrentPosition;
 

@@ -1,7 +1,7 @@
 #include "screenundowrapper.h"
 
 ScreenUndoWrapper::ScreenUndoWrapper() {
-    mScreenList.push_front(new Screen());
+    mScreenList.push_front(std::make_shared<Screen>());
     mCurrentPosition = mScreenList.begin();
 }
 
@@ -23,15 +23,17 @@ void ScreenUndoWrapper::redo(const QImage& img) {
  */
 void ScreenUndoWrapper::saveState() {
     // remove everything newer than current position
-    if(mCurrentPosition != mScreenList.begin())
-        mScreenList.erase(mScreenList.begin(), ++mCurrentPosition);
+    if(mCurrentPosition != mScreenList.begin()){
+        //mCurrentPosition;
+        mScreenList.erase(mScreenList.begin(), mCurrentPosition);
+    }
     // add a new state
-    mScreenList.push_front(new Screen(*mScreenList.front()));
+    mScreenList.push_front(std::make_shared<Screen>(*mScreenList.front()));
     // point current position to newest state
     mCurrentPosition = mScreenList.begin();
 }
 
-Screen* ScreenUndoWrapper::getCurrentScreen() const {
+std::shared_ptr<Screen> ScreenUndoWrapper::getCurrentScreen() const {
     return *mCurrentPosition;
 }
 

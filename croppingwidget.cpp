@@ -116,7 +116,8 @@ void CroppingWidget::onRedo() {
     updateStatusBar();
 }
 
-// this function scales the monitors up when they are bigger than the image :D might have to fix that sometime...
+// TODO: this function scales the monitors up when they are bigger than the image :D might have to fix that sometime...
+// TODO: ctrl+z erases one state too much
 void CroppingWidget::scaleToWindowSize() {
     double prevScale = imageScale();
     mCurrentImage = mOriginalImage.scaled(size(), Qt::KeepAspectRatio);

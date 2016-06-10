@@ -84,8 +84,6 @@ double Screen::getMinScaleFactor() const {
     return minScale;
 }
 
-// TODO: add ctrl+z -.-.
-
 bool Screen::scaledMonitorsFitImage(const QImage& img) const {
     return img.rect().contains(getRect());
 }
