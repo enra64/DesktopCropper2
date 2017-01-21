@@ -7,9 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->cropper->setStatusbar(ui->statusBar);
-    ui->cropper->addMonitor("l", QSize(1024, 1280), QPoint(0, 320));
-    ui->cropper->addMonitor("m", QSize(1920, 1080), QPoint(1024, 420));
-    ui->cropper->addMonitor("r", QSize(1080, 1920), QPoint(2944, 0));
+    ui->cropper->addMonitor("l", QSize(1050, 1680), QPoint(0, (1920 - 1680) / 2));
+    ui->cropper->addMonitor("m", QSize(1920, 1080), QPoint(1050, 420));
+    ui->cropper->addMonitor("r", QSize(1080, 1920), QPoint(1050+1920, 0));
     setWindowTitle(QString("Desktop Cropper 2"));
 }
 
@@ -59,7 +59,7 @@ QString MainWindow::showFileOpenDialog()
     dialog.setDirectory("/home/arne/Downloads");
     dialog.setFilter(QDir::Files);
     dialog.setWindowTitle("Open File");
-    dialog.setNameFilter("Images(*.jpg *.png)");
+    dialog.setNameFilter("Images(*.jpg *.png *.bmp)");
     dialog.setOption(QFileDialog::DontUseNativeDialog, true);
     QDialog::DialogCode result = (QDialog::DialogCode)dialog.exec();
 
